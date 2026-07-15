@@ -1,0 +1,1740 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>AURA ESTATES | Full-Stack Real Estate Platform</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,400;0,500;0,600;0,700;1,400;1,500&family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <script src="https://unpkg.com/lucide@latest"></script>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <style>
+        :root {
+            --gold: #C9A962;
+            --gold-light: #E8D5A3;
+            --dark: #0A0A0A;
+            --charcoal: #141414;
+            --panel: #1A1A1A;
+            --border: rgba(255,255,255,0.06);
+        }
+        body {
+            font-family: 'Inter', sans-serif;
+            background: var(--dark);
+            color: #fff;
+            overflow-x: hidden;
+        }
+        .font-serif { font-family: 'Playfair Display', serif; }
+        ::-webkit-scrollbar { width: 6px; }
+        ::-webkit-scrollbar-track { background: var(--dark); }
+        ::-webkit-scrollbar-thumb { background: var(--gold); border-radius: 3px; }
+        @keyframes fadeInUp {
+            from { opacity: 0; transform: translateY(30px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+        @keyframes fadeIn { from { opacity: 0; } to { opacity: 1; } }
+        @keyframes shimmer {
+            0% { background-position: -200% center; }
+            100% { background-position: 200% center; }
+        }
+        @keyframes slideIn {
+            from { transform: translateX(100%); opacity: 0; }
+            to { transform: translateX(0); opacity: 1; }
+        }
+        .animate-fade-in-up { animation: fadeInUp 0.7s cubic-bezier(0.16,1,0.3,1) forwards; }
+        .animate-fade-in { animation: fadeIn 0.5s ease forwards; }
+        .animate-slide-in { animation: slideIn 0.4s cubic-bezier(0.16,1,0.3,1) forwards; }
+        .delay-100 { animation-delay: 0.1s; opacity: 0; }
+        .delay-200 { animation-delay: 0.2s; opacity: 0; }
+        .delay-300 { animation-delay: 0.3s; opacity: 0; }
+        .delay-400 { animation-delay: 0.4s; opacity: 0; }
+        .text-gold-gradient {
+            background: linear-gradient(135deg, var(--gold) 0%, var(--gold-light) 50%, var(--gold) 100%);
+            background-size: 200% auto;
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+            animation: shimmer 3s linear infinite;
+        }
+        .hero-overlay {
+            background: linear-gradient(to bottom, rgba(10,10,10,0.2) 0%, rgba(10,10,10,0.1) 40%, rgba(10,10,10,0.7) 80%, rgba(10,10,10,1) 100%);
+        }
+        .btn-gold {
+            background: linear-gradient(135deg, var(--gold) 0%, var(--gold-light) 100%);
+            color: var(--dark);
+            transition: all 0.3s ease;
+        }
+        .btn-gold:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 10px 30px rgba(201,169,98,0.3);
+        }
+        .btn-outline {
+            border: 1px solid rgba(255,255,255,0.2);
+            transition: all 0.3s ease;
+        }
+        .btn-outline:hover {
+            border-color: var(--gold);
+            color: var(--gold);
+        }
+        .btn-dark {
+            background: rgba(255,255,255,0.05);
+            border: 1px solid rgba(255,255,255,0.1);
+            transition: all 0.3s ease;
+        }
+        .btn-dark:hover {
+            background: rgba(201,169,98,0.1);
+            border-color: var(--gold);
+        }
+        .property-card {
+            transition: all 0.5s cubic-bezier(0.16,1,0.3,1);
+        }
+        .property-card:hover {
+            transform: translateY(-8px);
+        }
+        .property-card:hover .property-img { transform: scale(1.08); }
+        .property-card:hover .property-overlay { opacity: 1; }
+        .property-img { transition: transform 0.8s cubic-bezier(0.16,1,0.3,1); }
+        .property-overlay {
+            opacity: 0;
+            transition: opacity 0.4s ease;
+        }
+        .nav-link { position: relative; }
+        .nav-link::after {
+            content: '';
+            position: absolute;
+            bottom: -4px; left: 0;
+            width: 0; height: 1px;
+            background: var(--gold);
+            transition: width 0.3s ease;
+        }
+        .nav-link:hover::after { width: 100%; }
+        .form-input {
+            background: rgba(255,255,255,0.04);
+            border: 1px solid rgba(255,255,255,0.08);
+            transition: all 0.3s ease;
+        }
+        .form-input:focus {
+            border-color: var(--gold);
+            background: rgba(255,255,255,0.06);
+            outline: none;
+        }
+        .mobile-menu {
+            transform: translateX(100%);
+            transition: transform 0.4s cubic-bezier(0.16,1,0.3,1);
+        }
+        .mobile-menu.active { transform: translateX(0); }
+        .reveal {
+            opacity: 0;
+            transform: translateY(25px);
+            transition: all 0.8s cubic-bezier(0.16,1,0.3,1);
+        }
+        .reveal.visible {
+            opacity: 1;
+            transform: translateY(0);
+        }
+        .gallery-item { overflow: hidden; position: relative; }
+        .gallery-item img { transition: transform 0.6s ease; }
+        .gallery-item:hover img { transform: scale(1.1); }
+        .testimonial-card {
+            background: linear-gradient(145deg, rgba(20,20,20,0.9), rgba(10,10,10,0.95));
+            border: 1px solid rgba(201,169,98,0.08);
+            transition: all 0.4s ease;
+        }
+        .testimonial-card:hover {
+            border-color: rgba(201,169,98,0.25);
+            transform: translateY(-4px);
+        }
+        .loader {
+            position: fixed; inset: 0;
+            background: var(--dark);
+            z-index: 9999;
+            display: flex;
+            align-items: center; justify-content: center;
+            transition: opacity 0.6s ease, visibility 0.6s ease;
+        }
+        .loader.hidden { opacity: 0; visibility: hidden; }
+        .loader-line {
+            width: 60px; height: 2px;
+            background: linear-gradient(90deg, transparent, var(--gold), transparent);
+            animation: shimmer 1.5s linear infinite;
+        }
+        .admin-panel {
+            background: var(--panel);
+            border: 1px solid var(--border);
+            border-radius: 12px;
+        }
+        .admin-sidebar {
+            background: var(--charcoal);
+            border-right: 1px solid var(--border);
+        }
+        .admin-nav-item {
+            transition: all 0.2s ease;
+            border-radius: 8px;
+        }
+        .admin-nav-item:hover, .admin-nav-item.active {
+            background: rgba(201,169,98,0.08);
+            color: var(--gold);
+        }
+        .admin-nav-item.active {
+            border-left: 2px solid var(--gold);
+        }
+        .stat-card {
+            background: linear-gradient(145deg, rgba(20,20,20,0.95), rgba(26,26,26,0.9));
+            border: 1px solid var(--border);
+            transition: all 0.3s ease;
+        }
+        .stat-card:hover {
+            border-color: rgba(201,169,98,0.2);
+            transform: translateY(-2px);
+        }
+        .badge {
+            font-size: 0.7rem;
+            padding: 2px 8px;
+            border-radius: 4px;
+            font-weight: 600;
+            text-transform: uppercase;
+            letter-spacing: 0.05em;
+        }
+        .badge-sold { background: rgba(34,197,94,0.15); color: #22c55e; }
+        .badge-listed { background: rgba(201,169,98,0.15); color: var(--gold); }
+        .badge-pending { background: rgba(59,130,246,0.15); color: #3b82f6; }
+        .badge-offer { background: rgba(168,85,247,0.15); color: #a855f7; }
+        .badge-draft { background: rgba(107,114,128,0.15); color: #6b7280; }
+        .table-row {
+            transition: all 0.2s ease;
+            border-bottom: 1px solid var(--border);
+        }
+        .table-row:hover {
+            background: rgba(201,169,98,0.03);
+        }
+        .chart-container {
+            background: var(--panel);
+            border: 1px solid var(--border);
+            border-radius: 12px;
+            padding: 20px;
+        }
+        .toast {
+            position: fixed;
+            bottom: 24px; right: 24px;
+            background: var(--charcoal);
+            border: 1px solid var(--gold);
+            padding: 16px 24px;
+            border-radius: 8px;
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            z-index: 9999;
+            transform: translateY(100px);
+            opacity: 0;
+            transition: all 0.4s cubic-bezier(0.16,1,0.3,1);
+        }
+        .toast.show {
+            transform: translateY(0);
+            opacity: 1;
+        }
+        .modal-overlay {
+            position: fixed; inset: 0;
+            background: rgba(0,0,0,0.8);
+            backdrop-filter: blur(8px);
+            z-index: 100;
+            display: flex;
+            align-items: center; justify-content: center;
+            opacity: 0;
+            pointer-events: none;
+            transition: opacity 0.3s ease;
+        }
+        .modal-overlay.active {
+            opacity: 1;
+            pointer-events: all;
+        }
+        .modal-content {
+            background: var(--charcoal);
+            border: 1px solid var(--border);
+            border-radius: 16px;
+            max-width: 900px;
+            width: 90%;
+            max-height: 90vh;
+            overflow-y: auto;
+            transform: scale(0.95);
+            transition: transform 0.3s ease;
+        }
+        .modal-overlay.active .modal-content {
+            transform: scale(1);
+        }
+        .progress-bar {
+            height: 4px;
+            background: rgba(255,255,255,0.05);
+            border-radius: 2px;
+            overflow: hidden;
+        }
+        .progress-bar-fill {
+            height: 100%;
+            background: linear-gradient(90deg, var(--gold), var(--gold-light));
+            border-radius: 2px;
+            transition: width 0.6s ease;
+        }
+        .tab-btn {
+            padding: 8px 16px;
+            border-radius: 6px;
+            font-size: 0.85rem;
+            transition: all 0.2s ease;
+            color: rgba(255,255,255,0.5);
+        }
+        .tab-btn:hover { color: rgba(255,255,255,0.8); }
+        .tab-btn.active {
+            background: rgba(201,169,98,0.1);
+            color: var(--gold);
+        }
+        .search-input {
+            background: rgba(255,255,255,0.04);
+            border: 1px solid rgba(255,255,255,0.08);
+            border-radius: 8px;
+            padding: 10px 14px 10px 40px;
+            color: white;
+            width: 100%;
+            transition: all 0.3s ease;
+        }
+        .search-input:focus {
+            border-color: var(--gold);
+            background: rgba(255,255,255,0.06);
+            outline: none;
+        }
+        .activity-dot {
+            width: 8px; height: 8px;
+            border-radius: 50%;
+            display: inline-block;
+        }
+        .activity-dot.online { background: #22c55e; box-shadow: 0 0 0 3px rgba(34,197,94,0.2); }
+        .activity-dot.busy { background: #f59e0b; }
+        .activity-dot.away { background: #6b7280; }
+        html { scroll-behavior: smooth; }
+    </style>
+</head>
+<body>
+    <div class="loader" id="loader">
+        <div class="loader-line"></div>
+    </div>
+
+    <div id="toast" class="toast">
+        <i data-lucide="check-circle" class="w-5 h-5 text-[#C9A962]"></i>
+        <span id="toast-message" class="text-sm">Action completed successfully</span>
+    </div>
+
+    <!-- PUBLIC SITE -->
+    <div id="public-site">
+        <nav id="navbar" class="fixed top-0 left-0 right-0 z-50 transition-all duration-500">
+            <div class="max-w-7xl mx-auto px-6 lg:px-8">
+                <div class="flex items-center justify-between h-20 lg:h-24">
+                    <a href="#" class="flex items-center gap-3 group" onclick="showSection('home')">
+                        <div class="w-10 h-10 border border-[#C9A962] flex items-center justify-center">
+                            <span class="font-serif text-[#C9A962] text-lg font-bold">A</span>
+                        </div>
+                        <div class="hidden sm:block">
+                            <span class="font-serif text-xl tracking-widest text-white">AURA</span>
+                            <span class="font-serif text-xl tracking-widest text-[#C9A962] ml-1">ESTATES</span>
+                        </div>
+                    </a>
+                    <div class="hidden lg:flex items-center gap-10">
+                        <a href="#properties" class="nav-link text-sm tracking-widest uppercase text-white/80 hover:text-white transition-colors">Properties</a>
+                        <a href="#about" class="nav-link text-sm tracking-widest uppercase text-white/80 hover:text-white transition-colors">About</a>
+                        <a href="#services" class="nav-link text-sm tracking-widest uppercase text-white/80 hover:text-white transition-colors">Services</a>
+                        <a href="#testimonials" class="nav-link text-sm tracking-widest uppercase text-white/80 hover:text-white transition-colors">Stories</a>
+                        <a href="#contact" class="nav-link text-sm tracking-widest uppercase text-white/80 hover:text-white transition-colors">Contact</a>
+                    </div>
+                    <div class="flex items-center gap-4">
+                        <button onclick="toggleAdmin()" class="hidden lg:flex items-center gap-2 text-white/60 hover:text-[#C9A962] transition-colors text-sm">
+                            <i data-lucide="layout-dashboard" class="w-4 h-4"></i> Admin
+                        </button>
+                        <a href="#contact" class="hidden lg:inline-flex btn-gold px-6 py-3 text-sm font-medium tracking-wider uppercase">Book Viewing</a>
+                        <button id="mobile-toggle" class="lg:hidden text-white p-2">
+                            <i data-lucide="menu" class="w-6 h-6"></i>
+                        </button>
+                    </div>
+                </div>
+            </div>
+        </nav>
+
+        <div id="mobile-menu" class="mobile-menu fixed inset-0 z-50 bg-[#0A0A0A] flex flex-col items-center justify-center gap-8">
+            <button id="mobile-close" class="absolute top-6 right-6 text-white p-2">
+                <i data-lucide="x" class="w-8 h-8"></i>
+            </button>
+            <a href="#properties" class="mobile-link font-serif text-3xl text-white hover:text-[#C9A962] transition-colors">Properties</a>
+            <a href="#about" class="mobile-link font-serif text-3xl text-white hover:text-[#C9A962] transition-colors">About</a>
+            <a href="#services" class="mobile-link font-serif text-3xl text-white hover:text-[#C9A962] transition-colors">Services</a>
+            <a href="#testimonials" class="mobile-link font-serif text-3xl text-white hover:text-[#C9A962] transition-colors">Stories</a>
+            <a href="#contact" class="mobile-link font-serif text-3xl text-white hover:text-[#C9A962] transition-colors">Contact</a>
+            <button onclick="toggleAdmin()" class="font-serif text-3xl text-[#C9A962] hover:text-white transition-colors flex items-center gap-3">
+                <i data-lucide="layout-dashboard" class="w-6 h-6"></i> Admin Dashboard
+            </button>
+        </div>
+
+        <section class="relative h-screen w-full overflow-hidden">
+            <div class="absolute inset-0">
+                <img src="https://images.unsplash.com/photo-1600596542815-ffad4c1539a9?w=1920&q=80" alt="Luxury Estate" class="w-full h-full object-cover">
+                <div class="hero-overlay absolute inset-0"></div>
+            </div>
+            <div class="relative z-10 h-full flex flex-col justify-end pb-20 lg:pb-32 px-6 lg:px-8 max-w-7xl mx-auto">
+                <div class="max-w-4xl">
+                    <p class="text-[#C9A962] text-sm tracking-[0.3em] uppercase mb-6 animate-fade-in-up delay-100">Premium Real Estate Since 2014</p>
+                    <h1 class="font-serif text-5xl sm:text-6xl lg:text-8xl text-white leading-[0.95] mb-8 animate-fade-in-up delay-200">
+                        Where Luxury<br><span class="text-gold-gradient italic">Meets Lifestyle</span>
+                    </h1>
+                    <p class="text-white/70 text-lg lg:text-xl max-w-xl mb-10 leading-relaxed animate-fade-in-up delay-300">
+                        Curating exceptional properties for discerning clients. From Banana Island penthouses to Lekki beachfront estates, we transform real estate dreams into reality.
+                    </p>
+                    <div class="flex flex-wrap gap-4 animate-fade-in-up delay-400">
+                        <a href="#properties" class="btn-gold px-8 py-4 text-sm font-medium tracking-wider uppercase inline-flex items-center gap-3">
+                            Explore Properties <i data-lucide="arrow-right" class="w-4 h-4"></i>
+                        </a>
+                        <a href="#about" class="btn-outline px-8 py-4 text-sm font-medium tracking-wider uppercase text-white">Our Story</a>
+                    </div>
+                </div>
+            </div>
+            <div class="absolute bottom-8 left-1/2 -translate-x-1/2 animate-fade-in delay-700">
+                <div class="flex flex-col items-center gap-2 text-white/50">
+                    <span class="text-xs tracking-widest uppercase">Scroll</span>
+                    <div class="w-px h-12 bg-gradient-to-b from-white/50 to-transparent"></div>
+                </div>
+            </div>
+        </section>
+
+        <section class="bg-[#141414] py-12 border-y border-white/5">
+            <div class="max-w-7xl mx-auto px-6 lg:px-8">
+                <div class="grid grid-cols-2 lg:grid-cols-4 gap-8 lg:gap-12">
+                    <div class="text-center reveal">
+                        <div class="font-serif text-4xl lg:text-5xl text-[#C9A962] mb-2">₦3.6T</div>
+                        <div class="text-white/50 text-sm tracking-wider uppercase">Sales Volume</div>
+                    </div>
+                    <div class="text-center reveal">
+                        <div class="font-serif text-4xl lg:text-5xl text-[#C9A962] mb-2">850+</div>
+                        <div class="text-white/50 text-sm tracking-wider uppercase">Properties Sold</div>
+                    </div>
+                    <div class="text-center reveal">
+                        <div class="font-serif text-4xl lg:text-5xl text-[#C9A962] mb-2">6</div>
+                        <div class="text-white/50 text-sm tracking-wider uppercase">Nigerian Markets</div>
+                    </div>
+                    <div class="text-center reveal">
+                        <div class="font-serif text-4xl lg:text-5xl text-[#C9A962] mb-2">98%</div>
+                        <div class="text-white/50 text-sm tracking-wider uppercase">Client Satisfaction</div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <section id="properties" class="py-24 lg:py-32 bg-[#0A0A0A]">
+            <div class="max-w-7xl mx-auto px-6 lg:px-8">
+                <div class="flex flex-col lg:flex-row lg:items-end lg:justify-between mb-16 reveal">
+                    <div>
+                        <p class="text-[#C9A962] text-sm tracking-[0.3em] uppercase mb-4">Curated Collection</p>
+                        <h2 class="font-serif text-4xl lg:text-6xl text-white">Featured<br>Properties</h2>
+                    </div>
+                    <div class="mt-6 lg:mt-0 flex gap-4 flex-wrap">
+                        <button class="filter-btn active px-6 py-2 text-sm tracking-wider uppercase border border-[#C9A962] text-[#C9A962]" data-filter="all">All</button>
+                        <button class="filter-btn px-6 py-2 text-sm tracking-wider uppercase border border-white/20 text-white/60 hover:border-[#C9A962] hover:text-[#C9A962] transition-all" data-filter="residential">Residential</button>
+                        <button class="filter-btn px-6 py-2 text-sm tracking-wider uppercase border border-white/20 text-white/60 hover:border-[#C9A962] hover:text-[#C9A962] transition-all" data-filter="commercial">Commercial</button>
+                    </div>
+                </div>
+                <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 lg:gap-8" id="property-grid"></div>
+                <div class="text-center mt-16 reveal">
+                    <button onclick="showToast('Loading more properties...')" class="btn-outline px-10 py-4 text-sm tracking-wider uppercase text-white inline-flex items-center gap-3">
+                        View All Properties <i data-lucide="arrow-right" class="w-4 h-4"></i>
+                    </button>
+                </div>
+            </div>
+        </section>
+
+        <section id="about" class="py-24 lg:py-32 bg-[#141414] relative overflow-hidden">
+            <div class="absolute top-0 right-0 w-1/2 h-full opacity-5">
+                <div class="font-serif text-[20rem] text-white leading-none">A</div>
+            </div>
+            <div class="max-w-7xl mx-auto px-6 lg:px-8 relative z-10">
+                <div class="grid grid-cols-1 lg:grid-cols-2 gap-16 lg:gap-24 items-center">
+                    <div class="reveal">
+                        <p class="text-[#C9A962] text-sm tracking-[0.3em] uppercase mb-6">Our Philosophy</p>
+                        <h2 class="font-serif text-4xl lg:text-5xl text-white mb-8 leading-tight">
+                            A Decade of Excellence in <span class="text-[#C9A962] italic">Luxury Real Estate</span>
+                        </h2>
+                        <div class="space-y-6 text-white/60 leading-relaxed">
+                            <p>With over ten years of experience in the luxury real estate market, we have cultivated an unparalleled network of properties and relationships. Our approach combines deep market expertise with an intimate understanding of what discerning clients truly seek.</p>
+                            <p>We do not just sell properties—we curate lifestyles. Every listing in our portfolio is hand-selected, ensuring it meets our exacting standards for quality, location, and architectural significance.</p>
+                        </div>
+                        <div class="mt-10 flex items-center gap-8">
+                            <div><div class="font-serif text-3xl text-[#C9A962]">10+</div><div class="text-white/50 text-sm">Years Experience</div></div>
+                            <div class="w-px h-12 bg-white/10"></div>
+                            <div><div class="font-serif text-3xl text-[#C9A962]">50+</div><div class="text-white/50 text-sm">Expert Agents</div></div>
+                            <div class="w-px h-12 bg-white/10"></div>
+                            <div><div class="font-serif text-3xl text-[#C9A962]">24/7</div><div class="text-white/50 text-sm">Concierge Service</div></div>
+                        </div>
+                    </div>
+                    <div class="relative reveal">
+                        <div class="aspect-[3/4] overflow-hidden">
+                            <img src="https://images.unsplash.com/photo-1600566753190-17f0baa2a6c3?w=800&q=80" alt="Luxury Interior" class="w-full h-full object-cover">
+                        </div>
+                        <div class="absolute -bottom-8 -left-8 bg-[#0A0A0A] p-8 border border-[#C9A962]/20 max-w-xs">
+                            <i data-lucide="quote" class="w-8 h-8 text-[#C9A962] mb-4"></i>
+                            <p class="font-serif text-lg text-white/90 italic leading-relaxed">"The attention to detail and market knowledge Aura Estates brought to our search was extraordinary."</p>
+                            <div class="mt-4 text-white/50 text-sm">— Bode & Funke Adeyemi</div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <section id="services" class="py-24 lg:py-32 bg-[#0A0A0A]">
+            <div class="max-w-7xl mx-auto px-6 lg:px-8">
+                <div class="text-center max-w-3xl mx-auto mb-20 reveal">
+                    <p class="text-[#C9A962] text-sm tracking-[0.3em] uppercase mb-4">What We Offer</p>
+                    <h2 class="font-serif text-4xl lg:text-6xl text-white mb-6">Bespoke Services</h2>
+                    <p class="text-white/50 text-lg">Comprehensive real estate solutions tailored to the unique needs of luxury property buyers and sellers.</p>
+                </div>
+                <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 lg:gap-8" id="services-grid"></div>
+            </div>
+        </section>
+
+        <section id="testimonials" class="py-24 lg:py-32 bg-[#141414] relative">
+            <div class="absolute inset-0 opacity-20">
+                <img src="https://images.unsplash.com/photo-1600607687644-c7171b42498f?w=1920&q=80" alt="Background" class="w-full h-full object-cover">
+            </div>
+            <div class="absolute inset-0 bg-gradient-to-b from-[#141414] via-[#141414]/95 to-[#141414]"></div>
+            <div class="max-w-7xl mx-auto px-6 lg:px-8 relative z-10">
+                <div class="text-center mb-20 reveal">
+                    <p class="text-[#C9A962] text-sm tracking-[0.3em] uppercase mb-4">Client Stories</p>
+                    <h2 class="font-serif text-4xl lg:text-6xl text-white">Trusted by Discerning<br>Clients Worldwide</h2>
+                </div>
+                <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 lg:gap-8" id="testimonials-grid"></div>
+            </div>
+        </section>
+
+        <section class="py-24 lg:py-32 bg-[#0A0A0A]">
+            <div class="max-w-7xl mx-auto px-6 lg:px-8">
+                <div class="flex flex-col lg:flex-row lg:items-end lg:justify-between mb-16 reveal">
+                    <div>
+                        <p class="text-[#C9A962] text-sm tracking-[0.3em] uppercase mb-4">The Lifestyle</p>
+                        <h2 class="font-serif text-4xl lg:text-6xl text-white">Beyond<br>Four Walls</h2>
+                    </div>
+                    <p class="text-white/50 max-w-md mt-6 lg:mt-0">We believe luxury living extends far beyond the property itself.</p>
+                </div>
+                <div class="grid grid-cols-2 lg:grid-cols-4 gap-4 lg:gap-6">
+                    <div class="gallery-item aspect-[3/4] reveal"><img src="https://images.unsplash.com/photo-1600566753086-00f18fb6b3ea?w=400&q=80" alt="Luxury Pool" class="w-full h-full object-cover"></div>
+                    <div class="gallery-item aspect-[3/4] lg:mt-12 reveal"><img src="https://images.unsplash.com/photo-1600585154526-990dced4db0d?w=400&q=80" alt="Interior" class="w-full h-full object-cover"></div>
+                    <div class="gallery-item aspect-[3/4] reveal"><img src="https://images.unsplash.com/photo-1600047509807-ba8f99d2cdde?w=400&q=80" alt="Architecture" class="w-full h-full object-cover"></div>
+                    <div class="gallery-item aspect-[3/4] lg:mt-12 reveal"><img src="https://images.unsplash.com/photo-1600573472550-8090b5e0745e?w=400&q=80" alt="Living" class="w-full h-full object-cover"></div>
+                </div>
+            </div>
+        </section>
+
+        <section id="contact" class="py-24 lg:py-32 bg-[#141414]">
+            <div class="max-w-7xl mx-auto px-6 lg:px-8">
+                <div class="grid grid-cols-1 lg:grid-cols-2 gap-16 lg:gap-24">
+                    <div class="reveal">
+                        <p class="text-[#C9A962] text-sm tracking-[0.3em] uppercase mb-6">Get in Touch</p>
+                        <h2 class="font-serif text-4xl lg:text-6xl text-white mb-8">Begin Your<br>Journey</h2>
+                        <p class="text-white/50 leading-relaxed mb-12">Whether you are seeking your dream home or looking to list your property with the most discerning clientele, our team is ready to guide you.</p>
+                        <div class="space-y-8">
+                            <div class="flex items-start gap-4">
+                                <div class="w-12 h-12 border border-[#C9A962]/30 flex items-center justify-center flex-shrink-0">
+                                    <i data-lucide="map-pin" class="w-5 h-5 text-[#C9A962]"></i>
+                                </div>
+                                <div>
+                                    <div class="text-white font-medium mb-1">Headquarters</div>
+                                    <div class="text-white/50">Plot 24, Ozumba Mbadiwe Avenue<br>Victoria Island, Lagos</div>
+                                </div>
+                            </div>
+                            <div class="flex items-start gap-4">
+                                <div class="w-12 h-12 border border-[#C9A962]/30 flex items-center justify-center flex-shrink-0">
+                                    <i data-lucide="phone" class="w-5 h-5 text-[#C9A962]"></i>
+                                </div>
+                                <div>
+                                    <div class="text-white font-medium mb-1">Phone</div>
+                                    <div class="text-white/50">+234 1 271 5500</div>
+                                </div>
+                            </div>
+                            <div class="flex items-start gap-4">
+                                <div class="w-12 h-12 border border-[#C9A962]/30 flex items-center justify-center flex-shrink-0">
+                                    <i data-lucide="mail" class="w-5 h-5 text-[#C9A962]"></i>
+                                </div>
+                                <div>
+                                    <div class="text-white font-medium mb-1">Email</div>
+                                    <div class="text-white/50">concierge@auraestates.com</div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="reveal">
+                        <form id="contact-form" class="space-y-6">
+                            <div class="grid grid-cols-1 sm:grid-cols-2 gap-6">
+                                <div>
+                                    <label class="block text-white/50 text-sm mb-2 tracking-wider uppercase">First Name</label>
+                                    <input type="text" id="contact-first" class="form-input w-full px-4 py-4 text-white" placeholder="John" required>
+                                </div>
+                                <div>
+                                    <label class="block text-white/50 text-sm mb-2 tracking-wider uppercase">Last Name</label>
+                                    <input type="text" id="contact-last" class="form-input w-full px-4 py-4 text-white" placeholder="Doe" required>
+                                </div>
+                            </div>
+                            <div>
+                                <label class="block text-white/50 text-sm mb-2 tracking-wider uppercase">Email Address</label>
+                                <input type="email" id="contact-email" class="form-input w-full px-4 py-4 text-white" placeholder="john@example.com" required>
+                            </div>
+                            <div>
+                                <label class="block text-white/50 text-sm mb-2 tracking-wider uppercase">Phone Number</label>
+                                <input type="tel" id="contact-phone" class="form-input w-full px-4 py-4 text-white" placeholder="+234 (___) ___-____">
+                            </div>
+                            <div>
+                                <label class="block text-white/50 text-sm mb-2 tracking-wider uppercase">Interest</label>
+                                <select id="contact-interest" class="form-input w-full px-4 py-4 text-white">
+                                    <option value="" class="bg-[#141414]">Select an option</option>
+                                    <option value="buy" class="bg-[#141414]">Buying a Property</option>
+                                    <option value="sell" class="bg-[#141414]">Selling a Property</option>
+                                    <option value="invest" class="bg-[#141414]">Investment Opportunities</option>
+                                    <option value="rent" class="bg-[#141414]">Property Management</option>
+                                </select>
+                            </div>
+                            <div>
+                                <label class="block text-white/50 text-sm mb-2 tracking-wider uppercase">Message</label>
+                                <textarea id="contact-message" class="form-input w-full px-4 py-4 text-white h-32 resize-none" placeholder="Tell us about your requirements..."></textarea>
+                            </div>
+                            <button type="submit" class="btn-gold w-full py-4 text-sm font-medium tracking-wider uppercase flex items-center justify-center gap-3">
+                                Send Message <i data-lucide="send" class="w-4 h-4"></i>
+                            </button>
+                        </form>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <footer class="bg-[#0A0A0A] border-t border-white/5 py-16 lg:py-20">
+            <div class="max-w-7xl mx-auto px-6 lg:px-8">
+                <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-12 lg:gap-8 mb-16">
+                    <div class="lg:col-span-1">
+                        <a href="#" class="flex items-center gap-3 mb-6">
+                            <div class="w-10 h-10 border border-[#C9A962] flex items-center justify-center">
+                                <span class="font-serif text-[#C9A962] text-lg font-bold">A</span>
+                            </div>
+                            <div>
+                                <span class="font-serif text-lg tracking-widest text-white">AURA</span>
+                                <span class="font-serif text-lg tracking-widest text-[#C9A962] ml-1">ESTATES</span>
+                            </div>
+                        </a>
+                        <p class="text-white/40 text-sm leading-relaxed">Curating exceptional luxury properties for the world's most discerning clientele since 2014.</p>
+                    </div>
+                    <div>
+                        <h4 class="text-white font-medium mb-6 tracking-wider uppercase text-sm">Quick Links</h4>
+                        <ul class="space-y-3">
+                            <li><a href="#properties" class="text-white/40 hover:text-[#C9A962] transition-colors text-sm">Properties</a></li>
+                            <li><a href="#about" class="text-white/40 hover:text-[#C9A962] transition-colors text-sm">About Us</a></li>
+                            <li><a href="#services" class="text-white/40 hover:text-[#C9A962] transition-colors text-sm">Services</a></li>
+                            <li><a href="#" class="text-white/40 hover:text-[#C9A962] transition-colors text-sm">Blog</a></li>
+                            <li><a href="#contact" class="text-white/40 hover:text-[#C9A962] transition-colors text-sm">Contact</a></li>
+                        </ul>
+                    </div>
+                    <div>
+                        <h4 class="text-white font-medium mb-6 tracking-wider uppercase text-sm">Markets</h4>
+                        <ul class="space-y-3">
+                            <li><a href="#" class="text-white/40 hover:text-[#C9A962] transition-colors text-sm">Banana Island</a></li>
+                            <li><a href="#" class="text-white/40 hover:text-[#C9A962] transition-colors text-sm">Victoria Island</a></li>
+                            <li><a href="#" class="text-white/40 hover:text-[#C9A962] transition-colors text-sm">Lekki</a></li>
+                            <li><a href="#" class="text-white/40 hover:text-[#C9A962] transition-colors text-sm">Ikoyi</a></li>
+                            <li><a href="#" class="text-white/40 hover:text-[#C9A962] transition-colors text-sm">Maitama, Abuja</a></li>
+                        </ul>
+                    </div>
+                    <div>
+                        <h4 class="text-white font-medium mb-6 tracking-wider uppercase text-sm">Newsletter</h4>
+                        <p class="text-white/40 text-sm mb-4">Subscribe for exclusive property listings and market insights.</p>
+                        <form class="flex gap-2" onsubmit="event.preventDefault(); showToast('Subscribed to newsletter!');">
+                            <input type="email" class="form-input flex-1 px-4 py-3 text-white text-sm" placeholder="Your email">
+                            <button type="submit" class="btn-gold px-4 py-3"><i data-lucide="arrow-right" class="w-4 h-4"></i></button>
+                        </form>
+                    </div>
+                </div>
+                <div class="border-t border-white/5 pt-8 flex flex-col lg:flex-row justify-between items-center gap-4">
+                    <p class="text-white/30 text-sm">2026 Aura Estates. All rights reserved.</p>
+                    <div class="flex gap-6">
+                        <a href="#" class="text-white/30 hover:text-[#C9A962] transition-colors text-sm">Privacy Policy</a>
+                        <a href="#" class="text-white/30 hover:text-[#C9A962] transition-colors text-sm">Terms of Service</a>
+                        <a href="#" class="text-white/30 hover:text-[#C9A962] transition-colors text-sm">Cookie Policy</a>
+                    </div>
+                </div>
+            </div>
+        </footer>
+    </div>
+
+    <!-- ADMIN DASHBOARD -->
+    <div id="admin-dashboard" class="hidden min-h-screen bg-[#0A0A0A]">
+        <aside class="admin-sidebar fixed left-0 top-0 bottom-0 w-64 z-40 hidden lg:flex flex-col">
+            <div class="p-6 border-b border-white/5">
+                <a href="#" class="flex items-center gap-3" onclick="toggleAdmin()">
+                    <div class="w-10 h-10 border border-[#C9A962] flex items-center justify-center">
+                        <span class="font-serif text-[#C9A962] text-lg font-bold">A</span>
+                    </div>
+                    <div>
+                        <span class="font-serif text-lg tracking-widest text-white">AURA</span>
+                        <span class="font-serif text-lg tracking-widest text-[#C9A962] ml-1">ADMIN</span>
+                    </div>
+                </a>
+            </div>
+            <nav class="flex-1 p-4 space-y-1 overflow-y-auto">
+                <button onclick="showAdminTab('overview')" class="admin-nav-item active w-full flex items-center gap-3 px-4 py-3 text-sm text-white/70" data-tab="overview">
+                    <i data-lucide="layout-dashboard" class="w-4 h-4"></i> Overview
+                </button>
+                <button onclick="showAdminTab('properties')" class="admin-nav-item w-full flex items-center gap-3 px-4 py-3 text-sm text-white/70" data-tab="properties">
+                    <i data-lucide="home" class="w-4 h-4"></i> Properties
+                    <span class="ml-auto bg-[#C9A962]/20 text-[#C9A962] text-xs px-2 py-0.5 rounded" id="prop-count">6</span>
+                </button>
+                <button onclick="showAdminTab('leads')" class="admin-nav-item w-full flex items-center gap-3 px-4 py-3 text-sm text-white/70" data-tab="leads">
+                    <i data-lucide="users" class="w-4 h-4"></i> Leads
+                    <span class="ml-auto bg-blue-500/20 text-blue-400 text-xs px-2 py-0.5 rounded" id="lead-count">3</span>
+                </button>
+                <button onclick="showAdminTab('analytics')" class="admin-nav-item w-full flex items-center gap-3 px-4 py-3 text-sm text-white/70" data-tab="analytics">
+                    <i data-lucide="bar-chart-3" class="w-4 h-4"></i> Analytics
+                </button>
+                <button onclick="showAdminTab('messages')" class="admin-nav-item w-full flex items-center gap-3 px-4 py-3 text-sm text-white/70" data-tab="messages">
+                    <i data-lucide="mail" class="w-4 h-4"></i> Messages
+                    <span class="ml-auto bg-red-500/20 text-red-400 text-xs px-2 py-0.5 rounded" id="msg-count">2</span>
+                </button>
+                <button onclick="showAdminTab('settings')" class="admin-nav-item w-full flex items-center gap-3 px-4 py-3 text-sm text-white/70" data-tab="settings">
+                    <i data-lucide="settings" class="w-4 h-4"></i> Settings
+                </button>
+            </nav>
+            <div class="p-4 border-t border-white/5">
+                <button onclick="toggleAdmin()" class="w-full flex items-center gap-3 px-4 py-3 text-sm text-white/50 hover:text-white transition-colors">
+                    <i data-lucide="log-out" class="w-4 h-4"></i> Exit Admin
+                </button>
+            </div>
+        </aside>
+
+        <div class="lg:ml-64">
+            <header class="sticky top-0 z-30 bg-[#0A0A0A]/95 backdrop-blur-xl border-b border-white/5 px-6 py-4 flex items-center justify-between">
+                <div class="flex items-center gap-4">
+                    <button onclick="toggleAdmin()" class="lg:hidden text-white/60 hover:text-white">
+                        <i data-lucide="arrow-left" class="w-5 h-5"></i>
+                    </button>
+                    <h1 class="font-serif text-xl text-white" id="admin-title">Dashboard Overview</h1>
+                </div>
+                <div class="flex items-center gap-4">
+                    <div class="relative">
+                        <i data-lucide="search" class="w-4 h-4 text-white/30 absolute left-3 top-1/2 -translate-y-1/2"></i>
+                        <input type="text" class="search-input w-64" placeholder="Search anything...">
+                    </div>
+                    <button class="relative p-2 text-white/50 hover:text-white transition-colors">
+                        <i data-lucide="bell" class="w-5 h-5"></i>
+                        <span class="absolute top-1 right-1 w-2 h-2 bg-[#C9A962] rounded-full"></span>
+                    </button>
+                    <div class="flex items-center gap-3 pl-4 border-l border-white/10">
+                        <div class="w-8 h-8 rounded-full bg-[#C9A962]/20 flex items-center justify-center">
+                            <span class="text-[#C9A962] text-xs font-bold">AD</span>
+                        </div>
+                        <span class="text-sm text-white/70 hidden sm:block">Admin User</span>
+                    </div>
+                </div>
+            </header>
+
+            <div class="p-6 lg:p-8">
+                <!-- Overview Tab -->
+                <div id="tab-overview" class="admin-tab">
+                    <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 mb-8">
+                        <div class="stat-card p-6 rounded-xl">
+                            <div class="flex items-center justify-between mb-4">
+                                <div class="w-10 h-10 rounded-lg bg-[#C9A962]/10 flex items-center justify-center">
+                                    <i data-lucide="dollar-sign" class="w-5 h-5 text-[#C9A962]"></i>
+                                </div>
+                                <span class="text-xs text-green-400 flex items-center gap-1"><i data-lucide="trending-up" class="w-3 h-3"></i> +12.5%</span>
+                            </div>
+                            <div class="font-serif text-2xl text-white mb-1">₦3.6B</div>
+                            <div class="text-white/40 text-sm">Revenue This Month</div>
+                        </div>
+                        <div class="stat-card p-6 rounded-xl">
+                            <div class="flex items-center justify-between mb-4">
+                                <div class="w-10 h-10 rounded-lg bg-blue-500/10 flex items-center justify-center">
+                                    <i data-lucide="home" class="w-5 h-5 text-blue-400"></i>
+                                </div>
+                                <span class="text-xs text-green-400 flex items-center gap-1"><i data-lucide="trending-up" class="w-3 h-3"></i> +3</span>
+                            </div>
+                            <div class="font-serif text-2xl text-white mb-1">142</div>
+                            <div class="text-white/40 text-sm">Active Listings</div>
+                        </div>
+                        <div class="stat-card p-6 rounded-xl">
+                            <div class="flex items-center justify-between mb-4">
+                                <div class="w-10 h-10 rounded-lg bg-purple-500/10 flex items-center justify-center">
+                                    <i data-lucide="users" class="w-5 h-5 text-purple-400"></i>
+                                </div>
+                                <span class="text-xs text-green-400 flex items-center gap-1"><i data-lucide="trending-up" class="w-3 h-3"></i> +8.2%</span>
+                            </div>
+                            <div class="font-serif text-2xl text-white mb-1">1,284</div>
+                            <div class="text-white/40 text-sm">Total Leads</div>
+                        </div>
+                        <div class="stat-card p-6 rounded-xl">
+                            <div class="flex items-center justify-between mb-4">
+                                <div class="w-10 h-10 rounded-lg bg-green-500/10 flex items-center justify-center">
+                                    <i data-lucide="check-circle" class="w-5 h-5 text-green-400"></i>
+                                </div>
+                                <span class="text-xs text-green-400 flex items-center gap-1"><i data-lucide="trending-up" class="w-3 h-3"></i> +5.1%</span>
+                            </div>
+                            <div class="font-serif text-2xl text-white mb-1">47</div>
+                            <div class="text-white/40 text-sm">Closed Deals</div>
+                        </div>
+                    </div>
+
+                    <div class="grid grid-cols-1 lg:grid-cols-2 gap-6 mb-8">
+                        <div class="chart-container">
+                            <div class="flex items-center justify-between mb-6">
+                                <h3 class="font-serif text-lg text-white">Revenue Overview</h3>
+                                <select class="form-input text-sm px-3 py-1.5">
+                                    <option class="bg-[#1A1A1A]">This Year</option>
+                                    <option class="bg-[#1A1A1A]">Last Year</option>
+                                </select>
+                            </div>
+                            <canvas id="revenueChart" height="200"></canvas>
+                        </div>
+                        <div class="chart-container">
+                            <div class="flex items-center justify-between mb-6">
+                                <h3 class="font-serif text-lg text-white">Property Categories</h3>
+                                <select class="form-input text-sm px-3 py-1.5">
+                                    <option class="bg-[#1A1A1A]">All Time</option>
+                                </select>
+                            </div>
+                            <canvas id="categoryChart" height="200"></canvas>
+                        </div>
+                    </div>
+
+                    <div class="grid grid-cols-1 lg:grid-cols-3 gap-6">
+                        <div class="lg:col-span-2 admin-panel p-6">
+                            <h3 class="font-serif text-lg text-white mb-6">Recent Activity</h3>
+                            <div class="space-y-4" id="activity-list"></div>
+                        </div>
+                        <div class="admin-panel p-6">
+                            <h3 class="font-serif text-lg text-white mb-6">Quick Actions</h3>
+                            <div class="space-y-3">
+                                <button onclick="openPropertyModal()" class="w-full flex items-center gap-3 p-4 rounded-lg bg-white/5 hover:bg-[#C9A962]/10 border border-white/5 hover:border-[#C9A962]/30 transition-all text-left">
+                                    <div class="w-10 h-10 rounded-lg bg-[#C9A962]/10 flex items-center justify-center flex-shrink-0">
+                                        <i data-lucide="plus" class="w-5 h-5 text-[#C9A962]"></i>
+                                    </div>
+                                    <div>
+                                        <div class="text-white text-sm font-medium">Add Property</div>
+                                        <div class="text-white/40 text-xs">List a new property</div>
+                                    </div>
+                                </button>
+                                <button onclick="showAdminTab('leads')" class="w-full flex items-center gap-3 p-4 rounded-lg bg-white/5 hover:bg-blue-500/10 border border-white/5 hover:border-blue-500/30 transition-all text-left">
+                                    <div class="w-10 h-10 rounded-lg bg-blue-500/10 flex items-center justify-center flex-shrink-0">
+                                        <i data-lucide="user-plus" class="w-5 h-5 text-blue-400"></i>
+                                    </div>
+                                    <div>
+                                        <div class="text-white text-sm font-medium">New Lead</div>
+                                        <div class="text-white/40 text-xs">Manually add a lead</div>
+                                    </div>
+                                </button>
+                                <button onclick="showToast('Report generated and downloaded')" class="w-full flex items-center gap-3 p-4 rounded-lg bg-white/5 hover:bg-purple-500/10 border border-white/5 hover:border-purple-500/30 transition-all text-left">
+                                    <div class="w-10 h-10 rounded-lg bg-purple-500/10 flex items-center justify-center flex-shrink-0">
+                                        <i data-lucide="file-text" class="w-5 h-5 text-purple-400"></i>
+                                    </div>
+                                    <div>
+                                        <div class="text-white text-sm font-medium">Generate Report</div>
+                                        <div class="text-white/40 text-xs">Export monthly data</div>
+                                    </div>
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Properties Tab -->
+                <div id="tab-properties" class="admin-tab hidden">
+                    <div class="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4 mb-6">
+                        <div class="flex items-center gap-4">
+                            <h2 class="font-serif text-2xl text-white">Property Listings</h2>
+                            <span class="text-white/40 text-sm">Manage all your properties</span>
+                        </div>
+                        <button onclick="openPropertyModal()" class="btn-gold px-5 py-2.5 text-sm font-medium flex items-center gap-2">
+                            <i data-lucide="plus" class="w-4 h-4"></i> Add Property
+                        </button>
+                    </div>
+                    <div class="flex flex-wrap gap-3 mb-6">
+                        <div class="relative">
+                            <i data-lucide="search" class="w-4 h-4 text-white/30 absolute left-3 top-1/2 -translate-y-1/2"></i>
+                            <input type="text" id="prop-search" class="search-input w-64" placeholder="Search properties..." oninput="filterProperties()">
+                        </div>
+                        <select id="prop-status-filter" class="form-input px-4 py-2.5 text-sm" onchange="filterProperties()">
+                            <option value="all">All Status</option>
+                            <option value="listed">Listed</option>
+                            <option value="sold">Sold</option>
+                            <option value="pending">Pending</option>
+                            <option value="draft">Draft</option>
+                        </select>
+                        <select id="prop-type-filter" class="form-input px-4 py-2.5 text-sm" onchange="filterProperties()">
+                            <option value="all">All Types</option>
+                            <option value="residential">Residential</option>
+                            <option value="commercial">Commercial</option>
+                        </select>
+                    </div>
+                    <div class="admin-panel overflow-hidden">
+                        <div class="overflow-x-auto">
+                            <table class="w-full">
+                                <thead>
+                                    <tr class="border-b border-white/5 text-left text-xs uppercase tracking-wider text-white/40">
+                                        <th class="px-6 py-4 font-medium">Property</th>
+                                        <th class="px-6 py-4 font-medium">Location</th>
+                                        <th class="px-6 py-4 font-medium">Price</th>
+                                        <th class="px-6 py-4 font-medium">Status</th>
+                                        <th class="px-6 py-4 font-medium">Views</th>
+                                        <th class="px-6 py-4 font-medium text-right">Actions</th>
+                                    </tr>
+                                </thead>
+                                <tbody id="properties-table-body"></tbody>
+                            </table>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Leads Tab -->
+                <div id="tab-leads" class="admin-tab hidden">
+                    <div class="flex items-center justify-between mb-6">
+                        <div>
+                            <h2 class="font-serif text-2xl text-white">Lead Management</h2>
+                            <p class="text-white/40 text-sm mt-1">Track and manage potential clients</p>
+                        </div>
+                        <button onclick="showToast('Exporting leads to CSV...')" class="btn-dark px-5 py-2.5 text-sm flex items-center gap-2">
+                            <i data-lucide="download" class="w-4 h-4"></i> Export
+                        </button>
+                    </div>
+                    <div class="admin-panel overflow-hidden">
+                        <div class="overflow-x-auto">
+                            <table class="w-full">
+                                <thead>
+                                    <tr class="border-b border-white/5 text-left text-xs uppercase tracking-wider text-white/40">
+                                        <th class="px-6 py-4 font-medium">Contact</th>
+                                        <th class="px-6 py-4 font-medium">Interest</th>
+                                        <th class="px-6 py-4 font-medium">Source</th>
+                                        <th class="px-6 py-4 font-medium">Status</th>
+                                        <th class="px-6 py-4 font-medium">Date</th>
+                                        <th class="px-6 py-4 font-medium text-right">Actions</th>
+                                    </tr>
+                                </thead>
+                                <tbody id="leads-table-body"></tbody>
+                            </table>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Analytics Tab -->
+                <div id="tab-analytics" class="admin-tab hidden">
+                    <h2 class="font-serif text-2xl text-white mb-6">Analytics & Insights</h2>
+                    <div class="grid grid-cols-1 lg:grid-cols-3 gap-6 mb-8">
+                        <div class="chart-container lg:col-span-2">
+                            <h3 class="font-serif text-lg text-white mb-4">Traffic Sources</h3>
+                            <canvas id="trafficChart" height="180"></canvas>
+                        </div>
+                        <div class="admin-panel p-6">
+                            <h3 class="font-serif text-lg text-white mb-4">Top Performing</h3>
+                            <div class="space-y-4" id="top-performing"></div>
+                        </div>
+                    </div>
+                    <div class="grid grid-cols-1 lg:grid-cols-2 gap-6">
+                        <div class="chart-container">
+                            <h3 class="font-serif text-lg text-white mb-4">Conversion Funnel</h3>
+                            <div class="space-y-4">
+                                <div>
+                                    <div class="flex justify-between text-sm mb-2">
+                                        <span class="text-white/60">Website Visitors</span>
+                                        <span class="text-white">12,450</span>
+                                    </div>
+                                    <div class="progress-bar"><div class="progress-bar-fill" style="width: 100%"></div></div>
+                                </div>
+                                <div>
+                                    <div class="flex justify-between text-sm mb-2">
+                                        <span class="text-white/60">Property Views</span>
+                                        <span class="text-white">8,320 (66.8%)</span>
+                                    </div>
+                                    <div class="progress-bar"><div class="progress-bar-fill" style="width: 67%"></div></div>
+                                </div>
+                                <div>
+                                    <div class="flex justify-between text-sm mb-2">
+                                        <span class="text-white/60">Contact Form Submissions</span>
+                                        <span class="text-white">1,284 (10.3%)</span>
+                                    </div>
+                                    <div class="progress-bar"><div class="progress-bar-fill" style="width: 10%"></div></div>
+                                </div>
+                                <div>
+                                    <div class="flex justify-between text-sm mb-2">
+                                        <span class="text-white/60">Qualified Leads</span>
+                                        <span class="text-white">423 (3.4%)</span>
+                                    </div>
+                                    <div class="progress-bar"><div class="progress-bar-fill" style="width: 3%"></div></div>
+                                </div>
+                                <div>
+                                    <div class="flex justify-between text-sm mb-2">
+                                        <span class="text-white/60">Closed Deals</span>
+                                        <span class="text-white">47 (0.4%)</span>
+                                    </div>
+                                    <div class="progress-bar"><div class="progress-bar-fill" style="width: 0.4%"></div></div>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="chart-container">
+                            <h3 class="font-serif text-lg text-white mb-4">Agent Performance</h3>
+                            <div class="space-y-4" id="agent-performance"></div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Messages Tab -->
+                <div id="tab-messages" class="admin-tab hidden">
+                    <div class="flex items-center justify-between mb-6">
+                        <h2 class="font-serif text-2xl text-white">Messages & Inquiries</h2>
+                        <div class="flex gap-2">
+                            <button class="tab-btn active">All</button>
+                            <button class="tab-btn">Unread</button>
+                            <button class="tab-btn">Replied</button>
+                        </div>
+                    </div>
+                    <div class="admin-panel overflow-hidden">
+                        <div id="messages-list" class="divide-y divide-white/5"></div>
+                    </div>
+                </div>
+
+                <!-- Settings Tab -->
+                <div id="tab-settings" class="admin-tab hidden">
+                    <h2 class="font-serif text-2xl text-white mb-6">Platform Settings</h2>
+                    <div class="grid grid-cols-1 lg:grid-cols-2 gap-6">
+                        <div class="admin-panel p-6">
+                            <h3 class="font-serif text-lg text-white mb-4">General Settings</h3>
+                            <div class="space-y-4">
+                                <div>
+                                    <label class="block text-white/50 text-sm mb-2">Company Name</label>
+                                    <input type="text" class="form-input w-full px-4 py-3 text-white" value="Aura Estates">
+                                </div>
+                                <div>
+                                    <label class="block text-white/50 text-sm mb-2">Contact Email</label>
+                                    <input type="email" class="form-input w-full px-4 py-3 text-white" value="concierge@auraestates.com">
+                                </div>
+                                <div>
+                                    <label class="block text-white/50 text-sm mb-2">Phone Number</label>
+                                    <input type="tel" class="form-input w-full px-4 py-3 text-white" value="+234 1 271 5500">
+                                </div>
+                                <div class="flex items-center justify-between pt-2">
+                                    <span class="text-white text-sm">Enable Notifications</span>
+                                    <button onclick="toggleSwitch(this)" class="w-12 h-6 rounded-full bg-[#C9A962] relative transition-colors">
+                                        <span class="absolute right-1 top-1 w-4 h-4 bg-white rounded-full transition-all"></span>
+                                    </button>
+                                </div>
+                                <div class="flex items-center justify-between pt-2">
+                                    <span class="text-white text-sm">Auto-Reply to Inquiries</span>
+                                    <button onclick="toggleSwitch(this)" class="w-12 h-6 rounded-full bg-white/20 relative transition-colors">
+                                        <span class="absolute left-1 top-1 w-4 h-4 bg-white rounded-full transition-all"></span>
+                                    </button>
+                                </div>
+                                <button onclick="showToast('Settings saved successfully')" class="btn-gold w-full py-3 text-sm font-medium mt-4">Save Changes</button>
+                            </div>
+                        </div>
+                        <div class="admin-panel p-6">
+                            <h3 class="font-serif text-lg text-white mb-4">SEO & Marketing</h3>
+                            <div class="space-y-4">
+                                <div>
+                                    <label class="block text-white/50 text-sm mb-2">Meta Title</label>
+                                    <input type="text" class="form-input w-full px-4 py-3 text-white" value="Aura Estates | Luxury Real Estate">
+                                </div>
+                                <div>
+                                    <label class="block text-white/50 text-sm mb-2">Meta Description</label>
+                                    <textarea class="form-input w-full px-4 py-3 text-white h-24 resize-none">Curating exceptional luxury properties for the world's most discerning clientele.</textarea>
+                                </div>
+                                <div>
+                                    <label class="block text-white/50 text-sm mb-2">Google Analytics ID</label>
+                                    <input type="text" class="form-input w-full px-4 py-3 text-white" value="G-XXXXXXXXXX" placeholder="G-XXXXXXXXXX">
+                                </div>
+                                <div>
+                                    <label class="block text-white/50 text-sm mb-2">Facebook Pixel ID</label>
+                                    <input type="text" class="form-input w-full px-4 py-3 text-white" placeholder="Enter Pixel ID">
+                                </div>
+                                <button onclick="showToast('SEO settings updated')" class="btn-gold w-full py-3 text-sm font-medium mt-4">Update SEO</button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Property Detail Modal -->
+    <div id="property-modal" class="modal-overlay">
+        <div class="modal-content">
+            <div class="p-6 border-b border-white/5 flex items-center justify-between">
+                <h2 class="font-serif text-xl text-white" id="modal-title">Property Details</h2>
+                <button onclick="closePropertyModal()" class="text-white/50 hover:text-white p-2">
+                    <i data-lucide="x" class="w-5 h-5"></i>
+                </button>
+            </div>
+            <div class="p-6" id="modal-body">
+                <!-- Dynamic content -->
+            </div>
+        </div>
+    </div>
+
+    <!-- Add Property Modal -->
+    <div id="add-property-modal" class="modal-overlay">
+        <div class="modal-content" style="max-width: 700px;">
+            <div class="p-6 border-b border-white/5 flex items-center justify-between">
+                <h2 class="font-serif text-xl text-white">Add New Property</h2>
+                <button onclick="closePropertyModal()" class="text-white/50 hover:text-white p-2">
+                    <i data-lucide="x" class="w-5 h-5"></i>
+                </button>
+            </div>
+            <div class="p-6 space-y-5">
+                <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                    <div>
+                        <label class="block text-white/50 text-sm mb-2">Property Name</label>
+                        <input type="text" id="new-prop-name" class="form-input w-full px-4 py-3 text-white" placeholder="e.g. The Glass House">
+                    </div>
+                    <div>
+                        <label class="block text-white/50 text-sm mb-2">Price</label>
+                        <input type="text" id="new-prop-price" class="form-input w-full px-4 py-3 text-white" placeholder="e.g. ₦18.8B">
+                    </div>
+                </div>
+                <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                    <div>
+                        <label class="block text-white/50 text-sm mb-2">Location</label>
+                        <input type="text" id="new-prop-location" class="form-input w-full px-4 py-3 text-white" placeholder="e.g. Banana Island, Lagos">
+                    </div>
+                    <div>
+                        <label class="block text-white/50 text-sm mb-2">Type</label>
+                        <select id="new-prop-type" class="form-input w-full px-4 py-3 text-white">
+                            <option class="bg-[#141414]" value="residential">Residential</option>
+                            <option class="bg-[#141414]" value="commercial">Commercial</option>
+                        </select>
+                    </div>
+                </div>
+                <div class="grid grid-cols-3 gap-4">
+                    <div>
+                        <label class="block text-white/50 text-sm mb-2">Beds</label>
+                        <input type="number" id="new-prop-beds" class="form-input w-full px-4 py-3 text-white" placeholder="6">
+                    </div>
+                    <div>
+                        <label class="block text-white/50 text-sm mb-2">Baths</label>
+                        <input type="number" id="new-prop-baths" class="form-input w-full px-4 py-3 text-white" placeholder="8">
+                    </div>
+                    <div>
+                        <label class="block text-white/50 text-sm mb-2">Sqm</label>
+                        <input type="text" id="new-prop-sqft" class="form-input w-full px-4 py-3 text-white" placeholder="1,115">
+                    </div>
+                </div>
+                <div>
+                    <label class="block text-white/50 text-sm mb-2">Image URL</label>
+                    <input type="text" id="new-prop-image" class="form-input w-full px-4 py-3 text-white" placeholder="https://images.unsplash.com/...">
+                </div>
+                <div>
+                    <label class="block text-white/50 text-sm mb-2">Description</label>
+                    <textarea id="new-prop-desc" class="form-input w-full px-4 py-3 text-white h-24 resize-none" placeholder="Property description..."></textarea>
+                </div>
+                <div class="flex gap-3 pt-2">
+                    <button onclick="addNewProperty()" class="btn-gold flex-1 py-3 text-sm font-medium">Add Property</button>
+                    <button onclick="closePropertyModal()" class="btn-dark flex-1 py-3 text-sm">Cancel</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // ==================== DATA STORE ====================
+        const appData = {
+            properties: [
+                { id: 1, name: "The Glass House", location: "Banana Island, Lagos", price: "₦18.8B", priceVal: 18750000000, status: "listed", type: "residential", beds: 6, baths: 8, sqft: "1,115", image: "https://images.unsplash.com/photo-1613490493576-7fde63acd811?w=600&q=80", views: 2847, tag: "Featured" },
+                { id: 2, name: "Oceanfront Paradise", location: "Lekki Phase 1, Lagos", price: "₦43.4B", priceVal: 43350000000, status: "listed", type: "residential", beds: 8, baths: 10, sqft: "1,719", image: "https://images.unsplash.com/photo-1512917774080-9991f1c4c750?w=600&q=80", views: 4521, tag: null },
+                { id: 3, name: "Skyline Penthouse", location: "Eko Atlantic, Lagos", price: "₦67.5B", priceVal: 67500000000, status: "pending", type: "commercial", beds: 5, baths: 6, sqft: "762", image: "https://images.unsplash.com/photo-1486406146926-c627a92ad1ab?w=600&q=80", views: 3892, tag: "New Listing" },
+                { id: 4, name: "The Ikoyi Manor", location: "Old Ikoyi, Lagos", price: "₦27.3B", priceVal: 27300000000, status: "listed", type: "residential", beds: 7, baths: 9, sqft: "1,394", image: "https://images.unsplash.com/photo-1600585154340-be6161a56a0c?w=600&q=80", views: 2156, tag: null },
+                { id: 5, name: "The Urban Loft", location: "Victoria Island, Lagos", price: "₦13.1B", priceVal: 13050000000, status: "sold", type: "commercial", beds: 3, baths: 3, sqft: "418", image: "https://images.unsplash.com/photo-1545324418-cc1a3fa10c00?w=600&q=80", views: 1834, tag: "Investment" },
+                { id: 6, name: "The Maitama Residence", location: "Maitama, Abuja", price: "₦33B", priceVal: 33000000000, status: "listed", type: "residential", beds: 9, baths: 11, sqft: "1,858", image: "https://images.unsplash.com/photo-1600607687939-ce8a6c25118c?w=600&q=80", views: 3120, tag: null }
+            ],
+            leads: [
+                { id: 1, name: "Chukwuemeka Okoye", email: "chukwuemeka.o@email.com", phone: "+234 803 123 4567", interest: "buy", source: "Website", status: "new", date: "2026-07-14", message: "Interested in Banana Island properties" },
+                { id: 2, name: "Zainab Abdullahi", email: "zainab.a@email.com", phone: "+234 802 234 5678", interest: "invest", source: "Referral", status: "contacted", date: "2026-07-13", message: "Looking for investment opportunities in Eko Atlantic" },
+                { id: 3, name: "Tunde Bakare", email: "tunde.b@email.com", phone: "+234 701 345 6789", interest: "sell", source: "Google Ads", status: "qualified", date: "2026-07-12", message: "Want to list my Lekki property" }
+            ],
+            messages: [
+                { id: 1, name: "Folake Adebayo", email: "folake.a@email.com", subject: "Inquiry about The Glass House", message: "I would love to schedule a private viewing of The Glass House next week. Is Tuesday available?", date: "2026-07-14 09:30", read: false },
+                { id: 2, name: "Emeka Umeh", email: "emeka.umeh@email.com", subject: "Investment consultation request", message: "I am interested in discussing investment opportunities in the Eko Atlantic market. Can we arrange a call?", date: "2026-07-13 16:45", read: false },
+                { id: 3, name: "Ngozi Eze", email: "ngozi.eze@email.com", subject: "Property valuation", message: "I would like to get a valuation for my property in Maitama. What is the process?", date: "2026-07-12 11:20", read: true }
+            ],
+            activities: [
+                { action: "New lead received", detail: "Chukwuemeka Okoye - Banana Island inquiry", time: "2 min ago", icon: "user-plus", color: "blue" },
+                { action: "Property viewed", detail: "Skyline Penthouse - 284 views today", time: "15 min ago", icon: "eye", color: "gold" },
+                { action: "Offer received", detail: "₦63B offer on Oceanfront Paradise", time: "1 hour ago", icon: "tag", color: "purple" },
+                { action: "Listing updated", detail: "The Ikoyi Manor - price reduced", time: "3 hours ago", icon: "edit", color: "green" },
+                { action: "Message replied", detail: "Folake Adebayo - viewing confirmed", time: "5 hours ago", icon: "mail", color: "blue" }
+            ]
+        };
+
+        // ==================== INIT ====================
+        document.addEventListener('DOMContentLoaded', () => {
+            lucide.createIcons();
+            setTimeout(() => document.getElementById('loader').classList.add('hidden'), 800);
+
+            renderProperties();
+            renderServices();
+            renderTestimonials();
+            renderAdminProperties();
+            renderLeads();
+            renderMessages();
+            renderActivities();
+            renderTopPerforming();
+            renderAgentPerformance();
+            initCharts();
+            setupScrollReveal();
+            setupNavbar();
+            setupMobileMenu();
+            setupContactForm();
+            setupPropertyFilters();
+        });
+
+        // ==================== RENDER FUNCTIONS ====================
+        function renderProperties() {
+            const grid = document.getElementById('property-grid');
+            grid.innerHTML = appData.properties.map(p => `
+                <div class="property-card group cursor-pointer reveal" data-category="${p.type}" onclick="showPropertyDetail(${p.id})">
+                    <div class="relative overflow-hidden aspect-[4/5] mb-5">
+                        <img src="${p.image}" alt="${p.name}" class="property-img w-full h-full object-cover">
+                        <div class="property-overlay absolute inset-0 bg-black/40 flex items-center justify-center">
+                            <span class="btn-gold px-6 py-3 text-sm tracking-wider uppercase">View Details</span>
+                        </div>
+                        ${p.tag ? `<div class="absolute top-4 left-4 bg-[#C9A962] text-[#0A0A0A] px-3 py-1 text-xs font-medium tracking-wider uppercase">${p.tag}</div>` : ''}
+                        <div class="absolute top-4 right-4 bg-black/60 backdrop-blur-sm text-white px-3 py-1 text-xs tracking-wider">${p.price}</div>
+                    </div>
+                    <div class="space-y-2">
+                        <h3 class="font-serif text-2xl text-white group-hover:text-[#C9A962] transition-colors">${p.name}</h3>
+                        <p class="text-white/50 text-sm flex items-center gap-2">
+                            <i data-lucide="map-pin" class="w-4 h-4"></i> ${p.location}
+                        </p>
+                        <div class="flex items-center gap-6 text-white/40 text-sm pt-2">
+                            <span class="flex items-center gap-2"><i data-lucide="bed" class="w-4 h-4"></i> ${p.beds} Beds</span>
+                            <span class="flex items-center gap-2"><i data-lucide="bath" class="w-4 h-4"></i> ${p.baths} Baths</span>
+                            <span class="flex items-center gap-2"><i data-lucide="maximize" class="w-4 h-4"></i> ${p.sqft} sqm</span>
+                        </div>
+                    </div>
+                </div>
+            `).join('');
+            lucide.createIcons();
+        }
+
+        function renderServices() {
+            const services = [
+                { icon: "home", title: "Property Acquisition", desc: "Expert guidance through every step of purchasing luxury properties, from off-market opportunities to exclusive listings." },
+                { icon: "trending-up", title: "Investment Advisory", desc: "Strategic portfolio management and market analysis to maximize returns on luxury real estate investments." },
+                { icon: "key", title: "Property Management", desc: "White-glove management services ensuring your property maintains its value and prestige year-round." },
+                { icon: "globe", title: "Global Relocation", desc: "Seamless international relocation services connecting you with luxury properties across Nigeria's most prestigious markets." },
+                { icon: "palette", title: "Interior Design", desc: "Access to world-renowned interior designers to transform your new property into a personalized sanctuary." },
+                { icon: "shield-check", title: "Legal & Compliance", desc: "Expert legal support navigating complex transactions, zoning laws, and international property regulations." }
+            ];
+            document.getElementById('services-grid').innerHTML = services.map((s, i) => `
+                <div class="group p-8 lg:p-10 bg-[#141414] border border-white/5 hover:border-[#C9A962]/30 transition-all duration-500 reveal">
+                    <div class="w-14 h-14 border border-[#C9A962]/30 flex items-center justify-center mb-6 group-hover:bg-[#C9A962]/10 transition-all">
+                        <i data-lucide="${s.icon}" class="w-6 h-6 text-[#C9A962]"></i>
+                    </div>
+                    <h3 class="font-serif text-2xl text-white mb-4">${s.title}</h3>
+                    <p class="text-white/50 leading-relaxed mb-6">${s.desc}</p>
+                    <a href="#" class="text-[#C9A962] text-sm tracking-wider uppercase inline-flex items-center gap-2 group-hover:gap-4 transition-all">
+                        Learn More <i data-lucide="arrow-right" class="w-4 h-4"></i>
+                    </a>
+                </div>
+            `).join('');
+            lucide.createIcons();
+        }
+
+        function renderTestimonials() {
+            const testimonials = [
+                { stars: 5, text: "Aura Estates made our dream of owning a beachfront property in Lekki a reality. Their attention to detail and discretion throughout the process was impeccable.", initials: "CA", name: "Chief & Mrs. Adebanjo", role: "Lekki Estate Owners" },
+                { stars: 5, text: "As a Nigerian investing from abroad, I needed a team that understood cross-border transactions. Aura Estates delivered beyond expectations with their diaspora expertise.", initials: "CN", name: "Chidi Nwosu", role: "Diaspora Investor, London" },
+                { stars: 5, text: "The team found us an off-market penthouse in Eko Atlantic that perfectly matched our vision. Their network and market knowledge are truly unmatched in the industry.", initials: "AM", name: "Aisha Mohammed", role: "Eko Atlantic Penthouse Owner" }
+            ];
+            document.getElementById('testimonials-grid').innerHTML = testimonials.map(t => `
+                <div class="testimonial-card p-8 reveal">
+                    <div class="flex items-center gap-1 mb-6">
+                        ${Array(5).fill('<i data-lucide="star" class="w-4 h-4 text-[#C9A962] fill-[#C9A962]"></i>').join('')}
+                    </div>
+                    <p class="text-white/80 leading-relaxed mb-8 font-serif text-lg italic">"${t.text}"</p>
+                    <div class="flex items-center gap-4">
+                        <div class="w-12 h-12 rounded-full bg-[#C9A962]/20 flex items-center justify-center">
+                            <span class="text-[#C9A962] font-serif text-lg">${t.initials}</span>
+                        </div>
+                        <div>
+                            <div class="text-white font-medium">${t.name}</div>
+                            <div class="text-white/50 text-sm">${t.role}</div>
+                        </div>
+                    </div>
+                </div>
+            `).join('');
+            lucide.createIcons();
+        }
+
+        function renderAdminProperties() {
+            const tbody = document.getElementById('properties-table-body');
+            const statusBadge = { listed: 'badge-listed', sold: 'badge-sold', pending: 'badge-pending', draft: 'badge-draft' };
+            tbody.innerHTML = appData.properties.map(p => `
+                <tr class="table-row" data-status="${p.status}" data-type="${p.type}">
+                    <td class="px-6 py-4">
+                        <div class="flex items-center gap-3">
+                            <img src="${p.image}" class="w-12 h-12 rounded-lg object-cover" alt="">
+                            <div>
+                                <div class="text-white text-sm font-medium">${p.name}</div>
+                                <div class="text-white/40 text-xs">${p.type}</div>
+                            </div>
+                        </div>
+                    </td>
+                    <td class="px-6 py-4 text-white/60 text-sm">${p.location}</td>
+                    <td class="px-6 py-4 text-white font-medium text-sm">${p.price}</td>
+                    <td class="px-6 py-4"><span class="badge ${statusBadge[p.status]}">${p.status}</span></td>
+                    <td class="px-6 py-4 text-white/60 text-sm">${p.views.toLocaleString()}</td>
+                    <td class="px-6 py-4 text-right">
+                        <button onclick="showPropertyDetail(${p.id})" class="text-white/40 hover:text-[#C9A962] transition-colors p-1">
+                            <i data-lucide="eye" class="w-4 h-4"></i>
+                        </button>
+                        <button onclick="showToast('Property edited')" class="text-white/40 hover:text-blue-400 transition-colors p-1 ml-2">
+                            <i data-lucide="edit" class="w-4 h-4"></i>
+                        </button>
+                        <button onclick="deleteProperty(${p.id})" class="text-white/40 hover:text-red-400 transition-colors p-1 ml-2">
+                            <i data-lucide="trash-2" class="w-4 h-4"></i>
+                        </button>
+                    </td>
+                </tr>
+            `).join('');
+            lucide.createIcons();
+        }
+
+        function renderLeads() {
+            const interestLabels = { buy: 'Buying', sell: 'Selling', invest: 'Investment', rent: 'Management' };
+            const statusColors = { new: 'text-blue-400', contacted: 'text-yellow-400', qualified: 'text-green-400', lost: 'text-red-400' };
+            document.getElementById('leads-table-body').innerHTML = appData.leads.map(l => `
+                <tr class="table-row">
+                    <td class="px-6 py-4">
+                        <div class="flex items-center gap-3">
+                            <div class="w-10 h-10 rounded-full bg-[#C9A962]/10 flex items-center justify-center">
+                                <span class="text-[#C9A962] text-xs font-bold">${l.name.split(' ').map(n => n[0]).join('')}</span>
+                            </div>
+                            <div>
+                                <div class="text-white text-sm font-medium">${l.name}</div>
+                                <div class="text-white/40 text-xs">${l.email}</div>
+                            </div>
+                        </div>
+                    </td>
+                    <td class="px-6 py-4 text-white/60 text-sm">${interestLabels[l.interest]}</td>
+                    <td class="px-6 py-4 text-white/60 text-sm">${l.source}</td>
+                    <td class="px-6 py-4 ${statusColors[l.status]} text-sm capitalize">${l.status}</td>
+                    <td class="px-6 py-4 text-white/40 text-sm">${l.date}</td>
+                    <td class="px-6 py-4 text-right">
+                        <button onclick="showToast('Lead details opened')" class="text-white/40 hover:text-[#C9A962] transition-colors p-1">
+                            <i data-lucide="eye" class="w-4 h-4"></i>
+                        </button>
+                        <button onclick="showToast('Email sent to ${l.name}')" class="text-white/40 hover:text-blue-400 transition-colors p-1 ml-2">
+                            <i data-lucide="mail" class="w-4 h-4"></i>
+                        </button>
+                    </td>
+                </tr>
+            `).join('');
+            lucide.createIcons();
+        }
+
+        function renderMessages() {
+            document.getElementById('messages-list').innerHTML = appData.messages.map(m => `
+                <div class="p-6 hover:bg-white/5 transition-colors cursor-pointer ${!m.read ? 'border-l-2 border-[#C9A962]' : ''}">
+                    <div class="flex items-start gap-4">
+                        <div class="w-10 h-10 rounded-full bg-[#C9A962]/10 flex items-center justify-center flex-shrink-0">
+                            <span class="text-[#C9A962] text-xs font-bold">${m.name.split(' ').map(n => n[0]).join('')}</span>
+                        </div>
+                        <div class="flex-1 min-w-0">
+                            <div class="flex items-center justify-between mb-1">
+                                <div class="flex items-center gap-2">
+                                    <span class="text-white text-sm font-medium">${m.name}</span>
+                                    ${!m.read ? '<span class="w-2 h-2 bg-[#C9A962] rounded-full"></span>' : ''}
+                                </div>
+                                <span class="text-white/30 text-xs">${m.date}</span>
+                            </div>
+                            <div class="text-white/70 text-sm font-medium mb-1">${m.subject}</div>
+                            <div class="text-white/40 text-sm truncate">${m.message}</div>
+                        </div>
+                    </div>
+                </div>
+            `).join('');
+        }
+
+        function renderActivities() {
+            const colorMap = { blue: 'bg-blue-500/10 text-blue-400', gold: 'bg-[#C9A962]/10 text-[#C9A962]', purple: 'bg-purple-500/10 text-purple-400', green: 'bg-green-500/10 text-green-400' };
+            document.getElementById('activity-list').innerHTML = appData.activities.map(a => `
+                <div class="flex items-start gap-4">
+                    <div class="w-10 h-10 rounded-lg ${colorMap[a.color]} flex items-center justify-center flex-shrink-0">
+                        <i data-lucide="${a.icon}" class="w-4 h-4"></i>
+                    </div>
+                    <div class="flex-1">
+                        <div class="text-white text-sm font-medium">${a.action}</div>
+                        <div class="text-white/40 text-sm">${a.detail}</div>
+                    </div>
+                    <span class="text-white/30 text-xs whitespace-nowrap">${a.time}</span>
+                </div>
+            `).join('');
+            lucide.createIcons();
+        }
+
+        function renderTopPerforming() {
+            const sorted = [...appData.properties].sort((a, b) => b.views - a.views).slice(0, 4);
+            document.getElementById('top-performing').innerHTML = sorted.map((p, i) => `
+                <div class="flex items-center gap-3">
+                    <div class="w-8 h-8 rounded-lg bg-[#C9A962]/10 flex items-center justify-center text-[#C9A962] text-xs font-bold">${i + 1}</div>
+                    <div class="flex-1 min-w-0">
+                        <div class="text-white text-sm truncate">${p.name}</div>
+                        <div class="text-white/40 text-xs">${p.views.toLocaleString()} views</div>
+                    </div>
+                    <div class="text-[#C9A962] text-sm font-medium">${p.price}</div>
+                </div>
+            `).join('');
+        }
+
+        function renderAgentPerformance() {
+            const agents = [
+                { name: "Adaeze Chukwu", deals: 12, revenue: "₦27.6B", progress: 92 },
+                { name: "Emeka Okonkwo", deals: 9, revenue: "₦21.3B", progress: 78 },
+                { name: "Chiamaka Balogun", deals: 7, revenue: "₦17.7B", progress: 65 },
+                { name: "Yusuf Ibrahim", deals: 5, revenue: "₦12.9B", progress: 48 }
+            ];
+            document.getElementById('agent-performance').innerHTML = agents.map(a => `
+                <div>
+                    <div class="flex items-center justify-between mb-2">
+                        <div class="flex items-center gap-2">
+                            <div class="w-8 h-8 rounded-full bg-[#C9A962]/10 flex items-center justify-center">
+                                <span class="text-[#C9A962] text-xs font-bold">${a.name.split(' ').map(n => n[0]).join('')}</span>
+                            </div>
+                            <div>
+                                <div class="text-white text-sm">${a.name}</div>
+                                <div class="text-white/40 text-xs">${a.deals} deals</div>
+                            </div>
+                        </div>
+                        <div class="text-[#C9A962] text-sm font-medium">${a.revenue}</div>
+                    </div>
+                    <div class="progress-bar"><div class="progress-bar-fill" style="width: ${a.progress}%"></div></div>
+                </div>
+            `).join('');
+        }
+
+        // ==================== CHARTS ====================
+        function initCharts() {
+            Chart.defaults.color = 'rgba(255,255,255,0.5)';
+            Chart.defaults.borderColor = 'rgba(255,255,255,0.05)';
+
+            new Chart(document.getElementById('revenueChart'), {
+                type: 'line',
+                data: {
+                    labels: ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul'],
+                    datasets: [{
+                        label: 'Revenue (\u20a6B)',
+                        data: [1.8, 2.25, 2.7, 3.15, 2.85, 3.45, 3.6],
+                        borderColor: '#C9A962',
+                        backgroundColor: 'rgba(201,169,98,0.1)',
+                        fill: true,
+                        tension: 0.4,
+                        pointBackgroundColor: '#C9A962',
+                        pointBorderColor: '#0A0A0A',
+                        pointBorderWidth: 2
+                    }]
+                },
+                options: { responsive: true, maintainAspectRatio: false, plugins: { legend: { display: false } }, scales: { y: { beginAtZero: true, grid: { color: 'rgba(255,255,255,0.03)' } }, x: { grid: { display: false } } } }
+            });
+
+            new Chart(document.getElementById('categoryChart'), {
+                type: 'doughnut',
+                data: {
+                    labels: ['Residential', 'Commercial', 'Land', 'Investment'],
+                    datasets: [{
+                        data: [65, 20, 8, 7],
+                        backgroundColor: ['#C9A962', '#3b82f6', '#22c55e', '#a855f7'],
+                        borderWidth: 0
+                    }]
+                },
+                options: { responsive: true, maintainAspectRatio: false, cutout: '70%', plugins: { legend: { position: 'bottom', labels: { padding: 20, usePointStyle: true } } } }
+            });
+
+            new Chart(document.getElementById('trafficChart'), {
+                type: 'bar',
+                data: {
+                    labels: ['Direct', 'Organic', 'Social', 'Referral', 'Paid'],
+                    datasets: [{
+                        label: 'Visitors',
+                        data: [4200, 3800, 2100, 1500, 850],
+                        backgroundColor: ['#C9A962', '#3b82f6', '#a855f7', '#22c55e', '#f59e0b'],
+                        borderRadius: 6
+                    }]
+                },
+                options: { responsive: true, maintainAspectRatio: false, plugins: { legend: { display: false } }, scales: { y: { beginAtZero: true, grid: { color: 'rgba(255,255,255,0.03)' } }, x: { grid: { display: false } } } }
+            });
+        }
+
+        // ==================== UI INTERACTIONS ====================
+        function toggleAdmin() {
+            const publicSite = document.getElementById('public-site');
+            const adminDash = document.getElementById('admin-dashboard');
+            if (adminDash.classList.contains('hidden')) {
+                publicSite.classList.add('hidden');
+                adminDash.classList.remove('hidden');
+                document.body.style.overflow = 'auto';
+                lucide.createIcons();
+                setTimeout(() => initCharts(), 100);
+            } else {
+                adminDash.classList.add('hidden');
+                publicSite.classList.remove('hidden');
+                lucide.createIcons();
+            }
+        }
+
+        function showAdminTab(tab) {
+            document.querySelectorAll('.admin-tab').forEach(t => t.classList.add('hidden'));
+            document.getElementById('tab-' + tab).classList.remove('hidden');
+            document.querySelectorAll('.admin-nav-item').forEach(n => n.classList.remove('active'));
+            document.querySelector(`.admin-nav-item[data-tab="${tab}"]`).classList.add('active');
+
+            const titles = { overview: 'Dashboard Overview', properties: 'Property Listings', leads: 'Lead Management', analytics: 'Analytics & Insights', messages: 'Messages & Inquiries', settings: 'Platform Settings' };
+            document.getElementById('admin-title').textContent = titles[tab];
+            lucide.createIcons();
+        }
+
+        function showPropertyDetail(id) {
+            const p = appData.properties.find(x => x.id === id);
+            if (!p) return;
+            document.getElementById('modal-title').textContent = p.name;
+            document.getElementById('modal-body').innerHTML = `
+                <div class="grid grid-cols-1 lg:grid-cols-2 gap-6">
+                    <div>
+                        <img src="${p.image}" class="w-full h-64 object-cover rounded-lg mb-4" alt="">
+                        <div class="grid grid-cols-3 gap-3">
+                            <div class="bg-white/5 p-3 rounded-lg text-center">
+                                <i data-lucide="bed" class="w-5 h-5 text-[#C9A962] mx-auto mb-1"></i>
+                                <div class="text-white text-sm font-medium">${p.beds}</div>
+                                <div class="text-white/40 text-xs">Beds</div>
+                            </div>
+                            <div class="bg-white/5 p-3 rounded-lg text-center">
+                                <i data-lucide="bath" class="w-5 h-5 text-[#C9A962] mx-auto mb-1"></i>
+                                <div class="text-white text-sm font-medium">${p.baths}</div>
+                                <div class="text-white/40 text-xs">Baths</div>
+                            </div>
+                            <div class="bg-white/5 p-3 rounded-lg text-center">
+                                <i data-lucide="maximize" class="w-5 h-5 text-[#C9A962] mx-auto mb-1"></i>
+                                <div class="text-white text-sm font-medium">${p.sqft}</div>
+                                <div class="text-white/40 text-xs">Sqm</div>
+                            </div>
+                        </div>
+                    </div>
+                    <div>
+                        <div class="flex items-center justify-between mb-4">
+                            <span class="text-[#C9A962] font-serif text-3xl">${p.price}</span>
+                            <span class="badge badge-${p.status}">${p.status}</span>
+                        </div>
+                        <p class="text-white/50 text-sm flex items-center gap-2 mb-4">
+                            <i data-lucide="map-pin" class="w-4 h-4"></i> ${p.location}
+                        </p>
+                        <p class="text-white/60 text-sm leading-relaxed mb-6">This exceptional property represents the pinnacle of luxury living. Featuring world-class amenities, breathtaking views, and meticulous attention to detail throughout every space.</p>
+                        <div class="space-y-3">
+                            <div class="flex justify-between text-sm">
+                                <span class="text-white/40">Property Type</span>
+                                <span class="text-white capitalize">${p.type}</span>
+                            </div>
+                            <div class="flex justify-between text-sm">
+                                <span class="text-white/40">Total Views</span>
+                                <span class="text-white">${p.views.toLocaleString()}</span>
+                            </div>
+                            <div class="flex justify-between text-sm">
+                                <span class="text-white/40">Listed Date</span>
+                                <span class="text-white">2026-01-15</span>
+                            </div>
+                        </div>
+                        <div class="flex gap-3 mt-6">
+                            <button onclick="showToast('Showing contact options...')" class="btn-gold flex-1 py-3 text-sm font-medium">Contact Agent</button>
+                            <button onclick="showToast('Added to favorites')" class="btn-dark flex-1 py-3 text-sm">Save</button>
+                        </div>
+                    </div>
+                </div>
+            `;
+            document.getElementById('property-modal').classList.add('active');
+            lucide.createIcons();
+        }
+
+        function openPropertyModal() {
+            document.getElementById('add-property-modal').classList.add('active');
+        }
+
+        function closePropertyModal() {
+            document.querySelectorAll('.modal-overlay').forEach(m => m.classList.remove('active'));
+        }
+
+        function addNewProperty() {
+            const name = document.getElementById('new-prop-name').value;
+            const price = document.getElementById('new-prop-price').value;
+            const location = document.getElementById('new-prop-location').value;
+            const type = document.getElementById('new-prop-type').value;
+            const beds = document.getElementById('new-prop-beds').value;
+            const baths = document.getElementById('new-prop-baths').value;
+            const sqft = document.getElementById('new-prop-sqft').value;
+            const image = document.getElementById('new-prop-image').value || 'https://images.unsplash.com/photo-1600596542815-ffad4c1539a9?w=600&q=80';
+
+            if (!name || !price || !location) {
+                showToast('Please fill in required fields');
+                return;
+            }
+
+            const numericPart = parseFloat(price.replace(/[^0-9.]/g, '')) || 0;
+            const multiplier = /b/i.test(price) ? 1000000000 : /m/i.test(price) ? 1000000 : /k/i.test(price) ? 1000 : 1;
+            const newProp = {
+                id: appData.properties.length + 1,
+                name, price, location, type, beds: beds || 0, baths: baths || 0, sqft: sqft || '0',
+                image, views: 0, status: 'listed', tag: 'New', priceVal: numericPart * multiplier
+            };
+
+            appData.properties.push(newProp);
+            renderProperties();
+            renderAdminProperties();
+            closePropertyModal();
+            showToast('Property added successfully!');
+            lucide.createIcons();
+
+            // Clear form
+            document.getElementById('new-prop-name').value = '';
+            document.getElementById('new-prop-price').value = '';
+            document.getElementById('new-prop-location').value = '';
+            document.getElementById('new-prop-beds').value = '';
+            document.getElementById('new-prop-baths').value = '';
+            document.getElementById('new-prop-sqft').value = '';
+            document.getElementById('new-prop-image').value = '';
+        }
+
+        function deleteProperty(id) {
+            if (!confirm('Are you sure you want to delete this property?')) return;
+            appData.properties = appData.properties.filter(p => p.id !== id);
+            renderProperties();
+            renderAdminProperties();
+            showToast('Property deleted');
+        }
+
+        function filterProperties() {
+            const search = document.getElementById('prop-search').value.toLowerCase();
+            const status = document.getElementById('prop-status-filter').value;
+            const type = document.getElementById('prop-type-filter').value;
+
+            document.querySelectorAll('#properties-table-body .table-row').forEach(row => {
+                const rowStatus = row.getAttribute('data-status');
+                const rowType = row.getAttribute('data-type');
+                const text = row.textContent.toLowerCase();
+
+                const matchSearch = text.includes(search);
+                const matchStatus = status === 'all' || rowStatus === status;
+                const matchType = type === 'all' || rowType === type;
+
+                row.style.display = matchSearch && matchStatus && matchType ? '' : 'none';
+            });
+        }
+
+        function showToast(msg) {
+            const toast = document.getElementById('toast');
+            document.getElementById('toast-message').textContent = msg;
+            toast.classList.add('show');
+            setTimeout(() => toast.classList.remove('show'), 3000);
+        }
+
+        function toggleSwitch(btn) {
+            const isOn = btn.classList.contains('bg-[#C9A962]');
+            const dot = btn.querySelector('span');
+            if (isOn) {
+                btn.classList.remove('bg-[#C9A962]');
+                btn.classList.add('bg-white/20');
+                dot.style.right = 'auto';
+                dot.style.left = '4px';
+            } else {
+                btn.classList.add('bg-[#C9A962]');
+                btn.classList.remove('bg-white/20');
+                dot.style.left = 'auto';
+                dot.style.right = '4px';
+            }
+        }
+
+        // ==================== SETUP ====================
+        function setupScrollReveal() {
+            const observer = new IntersectionObserver((entries) => {
+                entries.forEach(entry => {
+                    if (entry.isIntersecting) {
+                        entry.target.classList.add('visible');
+                        observer.unobserve(entry.target);
+                    }
+                });
+            }, { threshold: 0.1, rootMargin: '0px 0px -50px 0px' });
+            document.querySelectorAll('.reveal').forEach(el => observer.observe(el));
+        }
+
+        function setupNavbar() {
+            const navbar = document.getElementById('navbar');
+            window.addEventListener('scroll', () => {
+                if (window.pageYOffset > 100) {
+                    navbar.style.background = 'rgba(10, 10, 10, 0.95)';
+                    navbar.style.backdropFilter = 'blur(20px)';
+                    navbar.style.borderBottom = '1px solid rgba(255,255,255,0.05)';
+                } else {
+                    navbar.style.background = 'transparent';
+                    navbar.style.backdropFilter = 'none';
+                    navbar.style.borderBottom = 'none';
+                }
+            });
+        }
+
+        function setupMobileMenu() {
+            const toggle = document.getElementById('mobile-toggle');
+            const close = document.getElementById('mobile-close');
+            const menu = document.getElementById('mobile-menu');
+
+            toggle.addEventListener('click', () => { menu.classList.add('active'); document.body.style.overflow = 'hidden'; });
+            close.addEventListener('click', () => { menu.classList.remove('active'); document.body.style.overflow = ''; });
+            document.querySelectorAll('.mobile-link').forEach(link => {
+                link.addEventListener('click', () => { menu.classList.remove('active'); document.body.style.overflow = ''; });
+            });
+        }
+
+        function setupContactForm() {
+            document.getElementById('contact-form').addEventListener('submit', (e) => {
+                e.preventDefault();
+                const lead = {
+                    id: appData.leads.length + 1,
+                    name: document.getElementById('contact-first').value + ' ' + document.getElementById('contact-last').value,
+                    email: document.getElementById('contact-email').value,
+                    phone: document.getElementById('contact-phone').value || '',
+                    interest: document.getElementById('contact-interest').value || 'buy',
+                    source: 'Website',
+                    status: 'new',
+                    date: new Date().toISOString().split('T')[0],
+                    message: document.getElementById('contact-message').value || 'Contact form submission'
+                };
+                appData.leads.unshift(lead);
+                renderLeads();
+                showToast('Thank you! Our team will contact you within 24 hours.');
+                e.target.reset();
+                document.getElementById('lead-count').textContent = appData.leads.length;
+            });
+        }
+
+        function setupPropertyFilters() {
+            document.querySelectorAll('.filter-btn').forEach(btn => {
+                btn.addEventListener('click', () => {
+                    document.querySelectorAll('.filter-btn').forEach(b => {
+                        b.classList.remove('active', 'border-[#C9A962]', 'text-[#C9A962]');
+                        b.classList.add('border-white/20', 'text-white/60');
+                    });
+                    btn.classList.add('active', 'border-[#C9A962]', 'text-[#C9A962]');
+                    btn.classList.remove('border-white/20', 'text-white/60');
+
+                    const filter = btn.getAttribute('data-filter');
+                    document.querySelectorAll('.property-card').forEach(card => {
+                        const cat = card.getAttribute('data-category');
+                        card.style.display = (filter === 'all' || cat === filter) ? 'block' : 'none';
+                        if (card.style.display === 'block') card.style.animation = 'fadeInUp 0.6s ease forwards';
+                    });
+                });
+            });
+        }
+
+        // Close modals on backdrop click
+        document.querySelectorAll('.modal-overlay').forEach(overlay => {
+            overlay.addEventListener('click', (e) => {
+                if (e.target === overlay) overlay.classList.remove('active');
+            });
+        });
+    </script>
+</body>
+</html>
